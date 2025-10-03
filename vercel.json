@@ -1,0 +1,123 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/**/*.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/users/(\\d+)/admin",
+      "dest": "/api/users.ts?id=$1&__admin=1"
+    },
+    {
+      "src": "/api/users",
+      "dest": "/api/users.ts"
+    },
+    {
+      "src": "/api/services",
+      "dest": "/api/services.ts"
+    },
+    {
+      "src": "/api/services/(.*)",
+      "dest": "/api/services.ts"
+    },
+    {
+      "src": "/api/reviews",
+      "dest": "/api/reviews.ts"
+    },
+    {
+      "src": "/api/reviews/(.*)",
+      "dest": "/api/reviews.ts"
+    },
+    {
+      "src": "/api/appointments",
+      "dest": "/api/appointments.ts"
+    },
+
+    {
+      "src": "/api/appointments/(.*)",
+      "dest": "/api/appointments.ts"
+    },
+    {
+      "src": "/api/admin-check",
+      "dest": "/api/admin-check.ts"
+    },
+    {
+      "src": "/api/courses",
+      "dest": "/api/courses.ts"
+    },
+    {
+      "src": "/api/courses/(.*)",
+      "dest": "/api/courses.ts"
+    },
+    {
+      "src": "/api/create-payment-intent",
+      "dest": "/api/courses.ts"
+    },
+    {
+      "src": "/api/webhook/stripe",
+      "dest": "/api/courses.ts"
+    },
+    {
+      "src": "/api/auth/login",
+      "dest": "/api/auth/login.ts"
+    },
+    {
+      "src": "/api/auth/logout",
+      "dest": "/api/auth/logout.ts"
+    },
+    {
+      "src": "/api/auth/user",
+      "dest": "/api/auth/user.ts"
+    },
+    {
+      "src": "/api/auth/google",
+      "dest": "/api/auth/google.ts"
+    },
+    {
+      "src": "/api/auth/google/callback",
+      "dest": "/api/auth/google.ts"
+    },
+
+    {
+      "src": "/api/auth/demo-login",
+      "dest": "/api/auth/demo-login.ts"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/[...path].ts"
+    },
+    {
+      "src": "/favicon.svg",
+      "dest": "/client/public/favicon.svg"
+    },
+    {
+      "src": "/sw.js",
+      "dest": "/client/public/sw.js"
+    },
+    {
+      "src": "/default-avatar.png",
+      "dest": "/client/public/default-avatar.png"
+    },
+    {
+      "src": "/_vercel/insights/script.js",
+      "dest": "/_vercel/insights/script.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+} 

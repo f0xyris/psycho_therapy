@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1753378863835,
+      "tag": "0000_organic_carmella_unuscione",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1753452727799,
+      "tag": "0001_mysterious_master_chief",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753795463412,
+      "tag": "0002_narrow_riptide",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753797337731,
+      "tag": "0003_luxuriant_lady_deathstrike",
+      "breakpoints": true
+    }
+  ]
+}

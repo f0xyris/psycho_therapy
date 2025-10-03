@@ -16,11 +16,25 @@ function generateToken(payload: JWTPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 }
 
+function getBaseUrl(req: VercelRequest): string {
+  const envBase = process.env.PUBLIC_BASE_URL;
+  if (envBase && /^https?:\/\//i.test(envBase)) return envBase.replace(/\/$/, '');
+  const proto = (req.headers['x-forwarded-proto'] as string) || 'https';
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || '';
+  return `${proto}://${host}`.replace(/\/$/, '');
+}
+
+function getRedirectUri(req: VercelRequest): string {
+  return `${getBaseUrl(req)}/api/auth/google`;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://laser-touch.vercel.app');
+  const origin = getBaseUrl(req);
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Vary', 'Origin');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -55,7 +69,7 @@ async function handleOAuthInit(req: VercelRequest, res: VercelResponse) {
   }
   
   // Use the same URL for both initiation and callback
-  const redirectUri = 'https://laser-touch.vercel.app/api/auth/google';
+  const redirectUri = getRedirectUri(req);
   
   const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
@@ -108,7 +122,7 @@ async function handleCallback(req: VercelRequest, res: VercelResponse) {
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
       code: code as string,
       grant_type: 'authorization_code',
-      redirect_uri: 'https://laser-touch.vercel.app/api/auth/google',
+      redirect_uri: getRedirectUri(req),
     }),
   });
   

@@ -4,6 +4,8 @@ import { Pool } from 'pg';
 import Stripe from 'stripe';
 import jwt from 'jsonwebtoken';
 import { sendCoursePurchasedEmail } from '../server/emailService.js';
+import { put as putBlob } from '@vercel/blob';
+import formidable from 'formidable';
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-06-30.basil' })
@@ -139,6 +141,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (error: any) {
       console.error('Error creating payment intent:', error);
       return res.status(500).json({ error: 'Error creating payment intent: ' + error.message });
+    }
+  }
+
+  // Upload endpoint (form-data) consolidated here to avoid extra functions
+  if (req.method === 'POST' && pathname === '/api/upload') {
+    const token = extractToken(req);
+    const payload = verifyToken(token);
+    if (!payload || !payload.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    try {
+      // Parse multipart form with formidable
+      const form = formidable({ multiples: false, maxFileSize: 10 * 1024 * 1024 });
+      const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
+        form.parse(req as any, (err, fields, files) => {
+          if (err) reject(err);
+          else resolve({ fields, files });
+        });
+      });
+
+      const anyFile = (files as any)?.file || Object.values(files)[0];
+      const file = Array.isArray(anyFile) ? anyFile[0] : anyFile;
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      // Read file buffer
+      const fs = await import('fs');
+      const data = await fs.promises.readFile(file.filepath);
+      const contentType = (file.mimetype as string) || 'application/octet-stream';
+      const fileName = `${Date.now()}_${(file.originalFilename || 'upload').replace(/[^a-zA-Z0-9_.-]/g, '')}`;
+
+      // Upload to Vercel Blob (requires BLOB_READ_WRITE_TOKEN on project)
+      const blob = await putBlob(`uploads/${fileName}`, data, { access: 'public', contentType });
+
+      // Respond with public URL to be saved in DB
+      return res.status(200).json({ url: blob.url, originalName: file.originalFilename });
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      return res.status(500).json({ error: 'Upload failed', details: process.env.NODE_ENV === 'development' ? err?.message : undefined });
     }
   }
 

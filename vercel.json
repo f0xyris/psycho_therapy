@@ -68,6 +68,10 @@
       "dest": "/api/courses.ts"
     },
     {
+      "src": "/api/upload",
+      "dest": "/api/courses.ts"
+    },
+    {
       "src": "/api/working-hours",
       "dest": "/api/appointments.ts"
     },

@@ -69,11 +69,11 @@
     },
     {
       "src": "/api/working-hours",
-      "dest": "/api/working-hours.ts"
+      "dest": "/api/appointments.ts"
     },
     {
       "src": "/api/working-hours/(.*)",
-      "dest": "/api/working-hours.ts"
+      "dest": "/api/appointments.ts"
     },
     {
       "src": "/api/auth/login",

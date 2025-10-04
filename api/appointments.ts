@@ -39,8 +39,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'http://localhost:3000'
   ];
   
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
+  const origin = req.headers.origin as string | undefined;
+  const dynamicAllowedOrigins = new Set([
+    ...allowedOrigins,
+    'https://psycho-therapy.vercel.app'
+  ]);
+  if (origin && dynamicAllowedOrigins.has(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   
@@ -57,6 +61,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    const url = new URL(req.url || '/', 'https://psycho-therapy.vercel.app');
+    const pathname = url.pathname || '';
     // Verify token
     const token = extractTokenFromRequest(req);
     
@@ -92,6 +98,65 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       } catch (e) {
         // If DB check fails, fall back to token claim
+      }
+
+      // Inline sub-router to support /api/working-hours within this single function
+      if (pathname.startsWith('/api/working-hours')) {
+        if (req.method === 'GET') {
+          const dateParam = req.query.date as string | string[] | undefined;
+          const date = Array.isArray(dateParam) ? dateParam[0] : dateParam;
+          if (!date) return res.status(400).json({ error: 'date is required (YYYY-MM-DD)' });
+          try {
+            const structure = await client.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'working_hours'`);
+            if (structure.rows.length === 0) {
+              return res.status(200).json({});
+            }
+          } catch {
+            return res.status(200).json({});
+          }
+          const result = await client.query(
+            `SELECT id, date, start_time AS "startTime", end_time AS "endTime" FROM working_hours WHERE date = $1 LIMIT 1`,
+            [date]
+          );
+          const row = result.rows[0] || null;
+          return res.status(200).json(row || {});
+        }
+        if (req.method === 'POST') {
+          // Admin only
+          if (!effectiveIsAdmin) {
+            return res.status(403).json({ error: 'Admin access required' });
+          }
+          const rawBody: any = typeof req.body === 'string' ? (() => { try { return JSON.parse(req.body); } catch { return {}; } })() : (req.body || {});
+          const { date, startTime, endTime } = rawBody as { date?: string; startTime?: string; endTime?: string };
+          if (!date || !startTime || !endTime) {
+            return res.status(400).json({ error: 'date, startTime and endTime are required' });
+          }
+          const hhmm = /^\d{2}:\d{2}$/;
+          if (!hhmm.test(String(startTime)) || !hhmm.test(String(endTime))) {
+            return res.status(400).json({ error: 'Invalid time format, expected HH:mm' });
+          }
+          const colsRes = await client.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'working_hours'`);
+          const hasUpdatedAt = colsRes.rows.some((r: any) => r.column_name === 'updated_at');
+          const upd = await client.query(
+            `UPDATE working_hours SET start_time = $2, end_time = $3${hasUpdatedAt ? ', updated_at = NOW()' : ''} WHERE date = $1 RETURNING id, date, start_time AS "startTime", end_time AS "endTime"`,
+            [date, startTime, endTime]
+          );
+          if (upd.rowCount > 0) {
+            return res.status(200).json(upd.rows[0]);
+          }
+          const ins = await client.query(
+            `INSERT INTO working_hours (date, start_time, end_time${hasUpdatedAt ? ', updated_at' : ''}) VALUES ($1, $2, $3${hasUpdatedAt ? ', NOW()' : ''}) RETURNING id, date, start_time AS "startTime", end_time AS "EndTime"`,
+            [date, startTime, endTime]
+          );
+          // Normalize key name to endTime
+          const saved = ins.rows[0];
+          if (saved && saved.EndTime && !saved.endTime) {
+            saved.endTime = saved.EndTime;
+            delete saved.EndTime;
+          }
+          return res.status(200).json(saved);
+        }
+        return res.status(405).json({ error: 'Method not allowed' });
       }
 
       if (req.method === 'GET') {

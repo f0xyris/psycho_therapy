@@ -20,7 +20,7 @@ const HERO_IMAGES = {
   hero3: "/images/hero3.jpg",
   hero4: "/images/hero4.jpg",
   hero5: "/images/hero5.jpg",
-  features: "/images/features.jpeg"
+  features: "/images/features.jpg"
 };
 
 // Фото терапевта (временное изображение, можно заменить на реальное)

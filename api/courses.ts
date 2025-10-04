@@ -87,6 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
     'https://laser-touch.vercel.app',
     'https://laser-touch-git-main-yaroslav-kravets-projects.vercel.app',
+    'https://psycho-therapy.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
   ];
@@ -153,6 +154,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
+      // Ensure Vercel Blob is configured
+      if (!process.env.BLOB_READ_WRITE_TOKEN) {
+        return res.status(500).json({ error: 'Blob storage is not configured. Set BLOB_READ_WRITE_TOKEN in project settings.' });
+      }
       // Parse multipart form with formidable
       const form = formidable({ multiples: false, maxFileSize: 10 * 1024 * 1024 });
       const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
@@ -181,7 +186,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ url: blob.url, originalName: file.originalFilename });
     } catch (err: any) {
       console.error('Upload error:', err);
-      return res.status(500).json({ error: 'Upload failed', details: process.env.NODE_ENV === 'development' ? err?.message : undefined });
+      const message = typeof err?.message === 'string' ? err.message : 'Upload failed';
+      // Surface common misconfiguration messages
+      if (message.toLowerCase().includes('unauthorized') || message.toLowerCase().includes('401')) {
+        return res.status(500).json({ error: 'Blob auth failed. Check BLOB_READ_WRITE_TOKEN in project env.' });
+      }
+      return res.status(500).json({ error: 'Upload failed' });
     }
   }
 

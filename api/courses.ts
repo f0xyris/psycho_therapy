@@ -195,6 +195,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // Read single course by id
+  if (pathname.startsWith('/api/courses/') && req.method === 'GET') {
+    const idStr = pathname.split('/').pop();
+    const id = Number(idStr);
+    if (!id || Number.isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid id' });
+    }
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: 'Database configuration missing' });
+    }
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    const client = await pool.connect();
+    try {
+      // Detect columns to normalize safely
+      const structure = await client.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'courses'`);
+      const cols = structure.rows.map((r: any) => r.column_name);
+      const rowRes = await client.query('SELECT * FROM courses WHERE id = $1 LIMIT 1', [id]);
+      const course = rowRes.rows?.[0];
+      if (!course) return res.status(404).json({ error: 'Not found' });
+      const normalized = {
+        id: course.id,
+        name: (cols.includes('name') ? course.name : course.title) || { ua: '', en: '', pl: '' },
+        description: cols.includes('description') ? (course.description || { ua: '', en: '', pl: '' }) : { ua: '', en: '', pl: '' },
+        price: cols.includes('price') ? (course.price || 0) : 0,
+        duration: cols.includes('duration') ? (course.duration || 60) : 60,
+        imageUrl: (cols.includes('image_url') ? (course.image_url || null) : null) || (cols.includes('image') ? (course.image || null) : null),
+        docUrl: cols.includes('doc_url') ? (course.doc_url || null) : null,
+        category: cols.includes('category') ? (course.category || 'custom') : 'custom',
+        isActive: cols.includes('is_active') ? (course.is_active !== false) : true,
+        createdAt: cols.includes('created_at') ? course.created_at : null,
+        updatedAt: cols.includes('updated_at') ? course.updated_at : null,
+      };
+      return res.status(200).json(normalized);
+    } finally {
+      client.release();
+      await pool.end();
+    }
+  }
+
   // Write operations for courses with dynamic columns
   if (pathname === '/api/courses' && req.method === 'POST') {
     const payload = verifyToken(extractToken(req));

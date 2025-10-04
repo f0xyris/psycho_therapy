@@ -79,11 +79,6 @@ const emailTemplates = {
                     <span style="color: #111827; font-weight: 500; margin-left: 8px;">{appointmentTime}</span>
                   </div>
                   <div style="display: flex; align-items: center;">
-                    <span style="background-color: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">4</span>
-                    <span style="color: #6b7280; font-size: 14px;">Формат:</span>
-                    <span style="color: #111827; font-weight: 500; margin-left: 8px;">{appointmentFormat}</span>
-                  </div>
-                  <div style="display: flex; align-items: center;">
                     <span style="background-color: #6366f1; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">4</span>
                     <span style="color: #6b7280; font-size: 14px;">Формат:</span>
                     <span style="color: #111827; font-weight: 500; margin-left: 8px;">{appointmentFormat}</span>
@@ -106,11 +101,8 @@ const emailTemplates = {
             
             <!-- Footer -->
             <div style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px;">З найкращими побажаннями,</p>
-              <p style="color: #111827; font-weight: 600; font-size: 16px; margin: 0;">Команда LaserTouch</p>
-              <div style="margin-top: 20px;">
-                <span style="color: #8b5cf6; font-size: 24px; font-weight: bold;">LaserTouch</span>
-              </div>
+              <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px;">З найкращими побажаннями, від</p>
+              <p style="color: #111827; font-weight: 600; font-size: 16px; margin: 0;">Анни Кухарської</p>
             </div>
           </div>
         </body>

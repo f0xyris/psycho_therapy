@@ -33,27 +33,25 @@ export default function EventDetails() {
     },
   });
 
-  // Engage doc preloader immediately when course with docUrl arrives to avoid flicker
-  useEffect(() => {
-    if (course?.docUrl) {
-      setDocLoading(true);
-    }
-  }, [course?.docUrl]);
-
+  // Parse document when course arrives
   useEffect(() => {
     (async () => {
+      // If no docUrl, don't wait for document
       if (!course?.docUrl || !docRef.current) {
         setDocLoading(false);
         return;
       }
-      // docLoading is set in the docUrl watcher to prevent one-frame flicker
+      // If docUrl exists, start loading immediately
+      setDocLoading(true);
       if (/\.docx?$/i.test(course.docUrl)) {
         try {
           const res = await fetch(course.docUrl);
           const blob = await res.blob();
           docRef.current.innerHTML = "";
           await renderDocx(blob, docRef.current, undefined, { inWrapper: false });
-        } catch {}
+        } catch (err) {
+          console.error('Error loading docx:', err);
+        }
         finally { setDocLoading(false); }
       } else if (/\.pdf$/i.test(course.docUrl)) {
         try {
@@ -69,16 +67,18 @@ export default function EventDetails() {
             textDiv.textContent = textContent.items.map((i: any) => i.str).join(' ');
             docRef.current.appendChild(textDiv);
           }
-        } catch {}
+        } catch (err) {
+          console.error('Error loading pdf:', err);
+        }
         finally { setDocLoading(false); }
       } else {
-        // Unsupported type – do not block UI
         setDocLoading(false);
       }
     })();
   }, [course?.docUrl]);
 
-  const showPreloader = isLoading || (!!course?.docUrl && docLoading);
+  // Show preloader while loading data OR while parsing document (only if docUrl exists)
+  const showPreloader = isLoading || (course?.docUrl && docLoading);
 
   if (showPreloader) {
     return (

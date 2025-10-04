@@ -92,7 +92,7 @@ export default function Login() {
       await registerMutation.mutateAsync(data);
       toast({
         title: t.auth?.register || "Registration successful",
-        description: "Ласкаво просимо до Psycho Therapy!",
+        description: "Ласкаво просимо на психотерапії з Анною Кухарською!",
       });
       // Небольшая задержка перед перенаправлением, чтобы пользователь увидел тост
       setTimeout(() => {
@@ -327,7 +327,7 @@ export default function Login() {
         <div className="flex flex-col justify-center items-center text-center space-y-6">
           <div className="max-w-md">
             <h1 className="text-4xl font-playfair font-bold text-sage-800 dark:text-sage-100 mb-4">
-              Psycho Therapy
+            Психотерапія з Анною Кухарською
             </h1>
             <p className="text-lg text-sage-600 dark:text-sage-300 mb-6">
               {t.auth?.heroDescription || "Професійна психологічна допомога та підтримка"}

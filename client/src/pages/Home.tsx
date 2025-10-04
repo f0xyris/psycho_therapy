@@ -20,7 +20,7 @@ const HERO_IMAGES = {
   hero3: "/images/hero3.jpg",
   hero4: "/images/hero4.jpg",
   hero5: "/images/hero5.jpg",
-  features: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1200&h=800&q=70"
+  features: "/images/features.jpeg"
 };
 
 // Фото терапевта (временное изображение, можно заменить на реальное)

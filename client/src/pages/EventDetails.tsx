@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { AppPreloader } from "@/components/LoadingSpinner";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { renderAsync as renderDocx } from "docx-preview";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 // Use Vite asset URL to point worker to the correct path
@@ -19,6 +19,7 @@ export default function EventDetails() {
   const [, setLocation] = useLocation();
   const { language } = useLanguage();
   const docRef = useRef<HTMLDivElement | null>(null);
+  const [docLoading, setDocLoading] = useState(false);
 
   const id = Number(params?.id);
 
@@ -34,7 +35,11 @@ export default function EventDetails() {
 
   useEffect(() => {
     (async () => {
-      if (!course?.docUrl || !docRef.current) return;
+      if (!course?.docUrl || !docRef.current) {
+        setDocLoading(false);
+        return;
+      }
+      setDocLoading(true);
       if (/\.docx?$/i.test(course.docUrl)) {
         try {
           const res = await fetch(course.docUrl);
@@ -42,6 +47,7 @@ export default function EventDetails() {
           docRef.current.innerHTML = "";
           await renderDocx(blob, docRef.current, undefined, { inWrapper: false });
         } catch {}
+        finally { setDocLoading(false); }
       } else if (/\.pdf$/i.test(course.docUrl)) {
         try {
           const loadingTask = getDocument(course.docUrl);
@@ -57,11 +63,17 @@ export default function EventDetails() {
             docRef.current.appendChild(textDiv);
           }
         } catch {}
+        finally { setDocLoading(false); }
+      } else {
+        // Unsupported type – do not block UI
+        setDocLoading(false);
       }
     })();
   }, [course?.docUrl]);
 
-  if (isLoading) {
+  const showPreloader = isLoading || (!!course?.docUrl && docLoading);
+
+  if (showPreloader) {
     return (
       <>
         <AppPreloader isVisible={true} />

@@ -962,6 +962,11 @@ const emailTemplates = {
                     <span style="color: #6b7280; font-size: 14px;">Телефон:</span>
                     <span style="color: #111827; font-weight: 500; margin-left: 8px;">{clientPhone}</span>
                   </div>
+                  <div style="display: flex; align-items: center;">
+                    <span style="background-color: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">💬</span>
+                    <span style="color: #6b7280; font-size: 14px;">Месенджер:</span>
+                    <span style="color: #111827; font-weight: 500; margin-left: 8px;">{messengerInfo}</span>
+                  </div>
                 </div>
               </div>
               
@@ -983,6 +988,11 @@ const emailTemplates = {
                     <span style="background-color: #8b5cf6; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">3</span>
                     <span style="color: #6b7280; font-size: 14px;">Час:</span>
                     <span style="color: #111827; font-weight: 500; margin-left: 8px;">{appointmentTime}</span>
+                  </div>
+                  <div style="display: flex; align-items: center;">
+                    <span style="background-color: #6366f1; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">4</span>
+                    <span style="color: #6b7280; font-size: 14px;">Формат:</span>
+                    <span style="color: #111827; font-weight: 500; margin-left: 8px;">{appointmentFormat}</span>
                   </div>
                   <div style="display: flex; align-items: center;">
                     <span style="background-color: #f59e0b; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; margin-right: 12px;">!</span>
@@ -1427,8 +1437,21 @@ export async function sendAdminAppointmentNotification(
   serviceName: string,
   appointmentDate: Date,
   isOnline: boolean,
-  language: string = 'ua'
+  language: string = 'ua',
+  messengerType: string | null = null,
+  messengerContact: string | null = null
 ) {
+  const messengerNames: { [key: string]: string } = {
+    telegram: 'Telegram',
+    instagram: 'Instagram',
+    viber: 'Viber',
+    whatsapp: 'WhatsApp'
+  };
+  
+  const messengerInfo = messengerType && messengerContact
+    ? `${messengerNames[messengerType] || messengerType}: ${messengerContact}`
+    : 'Не вказано';
+  
   const data = {
     clientName: clientName,
     clientEmail: clientEmail,
@@ -1436,7 +1459,8 @@ export async function sendAdminAppointmentNotification(
     serviceName: serviceName,
     appointmentDate: formatDate(appointmentDate, language),
     appointmentTime: formatTime(appointmentDate, language),
-    appointmentFormat: getAppointmentFormat(language, isOnline)
+    appointmentFormat: getAppointmentFormat(language, isOnline),
+    messengerInfo: messengerInfo
   };
   
   return sendEmail(adminEmail, 'adminAppointmentNotification', data, language);

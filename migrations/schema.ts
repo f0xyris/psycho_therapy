@@ -10,6 +10,9 @@ export const appointments = pgTable("appointments", {
 	appointmentDate: timestamp("appointment_date", { mode: 'string' }).notNull(),
 	status: text().default('pending').notNull(),
 	notes: text(),
+	messengerType: text("messenger_type"),
+	messengerContact: text("messenger_contact"),
+	isOnline: boolean("is_online").default(false),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
@@ -88,4 +91,7 @@ export const services = pgTable("services", {
 	price: integer().notNull(),
 	duration: integer().notNull(),
 	category: text().notNull(),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 });

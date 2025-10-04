@@ -27,7 +27,9 @@ const Booking = () => {
     date: "",
     time: "",
     notes: "",
-    isOnline: false
+    isOnline: false,
+    messengerType: "",
+    messengerContact: ""
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -233,7 +235,9 @@ const Booking = () => {
         date: "",
         time: "",
         notes: "",
-        isOnline: false
+        isOnline: false,
+        messengerType: "",
+        messengerContact: ""
       });
     },
     onError: (error: any) => {
@@ -307,6 +311,8 @@ const Booking = () => {
       appointmentDate: appointmentDateTime.toISOString(),
       isOnline: formData.isOnline,
       notes: formData.notes || null,
+      messengerType: formData.messengerType || null,
+      messengerContact: formData.messengerContact || null,
       status: "pending"
     };
 
@@ -390,6 +396,37 @@ const Booking = () => {
               <div className="flex gap-2">
                 <Button type="button" variant={formData.isOnline ? "outline" : "default"} className={!formData.isOnline ? "bg-gradient-to-r from-mystical-500 to-accent-500 text-white" : ""} onClick={() => setFormData(p=>({...p, isOnline:false}))}>Офлайн</Button>
                 <Button type="button" variant={formData.isOnline ? "default" : "outline"} className={formData.isOnline ? "bg-gradient-to-r from-mystical-500 to-accent-500 text-white" : ""} onClick={() => setFormData(p=>({...p, isOnline:true}))}>Онлайн</Button>
+              </div>
+            </div>
+
+            {/* Messenger Selection */}
+            <div className="space-y-4">
+              <Label className="block text-sm font-medium text-foreground dark:text-foreground mb-2">
+                Месенджер для зв'язку
+              </Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Select value={formData.messengerType} onValueChange={(value) => handleInputChange("messengerType", value)}>
+                    <SelectTrigger className="dark:bg-background dark:border-mystical-700 focus:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0">
+                      <SelectValue placeholder="Оберіть месенджер" />
+                    </SelectTrigger>
+                    <SelectContent className="dark:bg-background dark:border-mystical-700">
+                      <SelectItem value="telegram">Telegram</SelectItem>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                      <SelectItem value="viber">Viber</SelectItem>
+                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Ваш контакт (@username або номер)"
+                    value={formData.messengerContact}
+                    onChange={(e) => handleInputChange("messengerContact", e.target.value)}
+                    className="w-full h-10 px-3 rounded-md border border-input dark:bg-background dark:border-mystical-700 dark:text-foreground focus:outline-none focus:ring-0 focus-visible:ring-0"
+                  />
+                </div>
               </div>
             </div>
 

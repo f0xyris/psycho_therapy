@@ -46,6 +46,9 @@ export const services = pgTable("services", {
   price: integer("price").notNull(), // price in kopecks
   duration: integer("duration").notNull(), // duration in minutes
   category: text("category").notNull(), // 'laser', 'massage', 'spa', 'training'
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const appointments = pgTable("appointments", {
@@ -56,6 +59,8 @@ export const appointments = pgTable("appointments", {
   isOnline: boolean("is_online").default(false),
   status: text("status").notNull().default("pending"), // 'pending', 'confirmed', 'completed', 'cancelled'
   notes: text("notes"),
+  messengerType: text("messenger_type"),
+  messengerContact: text("messenger_contact"),
   isDeletedFromAdmin: boolean("is_deleted_from_admin").default(false), // новое поле для отслеживания удаления из админки
   // Поля для клиентов без аккаунта
   clientName: varchar("client_name"),

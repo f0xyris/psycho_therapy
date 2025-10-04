@@ -342,9 +342,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(200).json(appointments);
       } else if (req.method === 'POST') {
         // Create new appointment
-        const { userId, serviceId, appointmentDate, appointmentTime, notes } = req.body;
+        const { userId, serviceId, appointmentDate, appointmentTime, notes, isOnline, messengerType, messengerContact } = req.body;
         
-        console.log('POST appointment data:', { userId, serviceId, appointmentDate, appointmentTime, notes });
+        console.log('POST appointment data:', { userId, serviceId, appointmentDate, appointmentTime, notes, isOnline, messengerType, messengerContact });
         
         // Validate required fields
         if (!serviceId || !appointmentDate) {
@@ -383,17 +383,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           });
         }
 
-        const result = await client.query(`
-          INSERT INTO appointments (user_id, service_id, appointment_date, status, notes, created_at)
-          VALUES ($1, $2, $3, $4, $5, NOW())
-          RETURNING id
-        `, [
+        // Check what columns exist in appointments table
+        const structureCheck = await client.query(`
+          SELECT column_name FROM information_schema.columns WHERE table_name = 'appointments'
+        `);
+        const existingColumns = structureCheck.rows.map((r: any) => r.column_name);
+        
+        // Build dynamic query based on available columns
+        let insertColumns = ['user_id', 'service_id', 'appointment_date', 'status', 'notes', 'created_at'];
+        let insertValues = [
           targetUserId.toString(),
           serviceId,
           formattedDate,
           'pending',
           notes || ''
-        ]);
+        ];
+        let insertPlaceholders = ['$1', '$2', '$3', '$4', '$5', 'NOW()'];
+        
+        if (existingColumns.includes('is_online')) {
+          insertColumns.push('is_online');
+          insertValues.push(isOnline || false);
+          insertPlaceholders.push(`$${insertValues.length}`);
+        }
+        
+        if (existingColumns.includes('messenger_type') && messengerType) {
+          insertColumns.push('messenger_type');
+          insertValues.push(messengerType);
+          insertPlaceholders.push(`$${insertValues.length}`);
+        }
+        
+        if (existingColumns.includes('messenger_contact') && messengerContact) {
+          insertColumns.push('messenger_contact');
+          insertValues.push(messengerContact);
+          insertPlaceholders.push(`$${insertValues.length}`);
+        }
+        
+        const insertQuery = `
+          INSERT INTO appointments (${insertColumns.join(', ')})
+          VALUES (${insertPlaceholders.join(', ')})
+          RETURNING id
+        `;
+        
+        const result = await client.query(insertQuery, insertValues);
         
         console.log('POST appointment successful, created ID:', result.rows[0].id);
 
@@ -440,7 +471,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               clientPhone,
               serviceName,
               new Date(formattedDate),
-              userLanguage
+              isOnline || false,
+              userLanguage,
+              messengerType || null,
+              messengerContact || null
             );
           } catch (adminErr) {
             console.error('Error sending admin notification email:', adminErr);

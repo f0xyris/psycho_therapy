@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
+import { Pool } from 'pg';
 
 interface JWTPayload {
   userId: number;
@@ -66,17 +67,62 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    // Check if user is admin
-    if (!payload.isAdmin) {
-      return res.status(403).json({ message: "Admin privileges required" });
+    // Check if user is demo
+    if (payload.isDemo) {
+      return res.status(200).json({ 
+        isAdmin: true,
+        userId: payload.userId,
+        isDemo: true
+      });
     }
 
-    // Return admin check result
-    res.status(200).json({ 
-      isAdmin: true,
-      userId: payload.userId,
-      isDemo: payload.isDemo || false
+    // Check actual admin status from database (overrides token value)
+    if (!process.env.DATABASE_URL) {
+      // Fallback to token check if DB is not available
+      if (!payload.isAdmin) {
+        return res.status(403).json({ message: "Admin privileges required" });
+      }
+      return res.status(200).json({ 
+        isAdmin: true,
+        userId: payload.userId,
+        isDemo: false
+      });
+    }
+
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
     });
+
+    const client = await pool.connect();
+    
+    try {
+      // Get current admin status from database
+      const result = await client.query(
+        'SELECT is_admin FROM users WHERE id = $1',
+        [payload.userId]
+      );
+
+      if (!result.rows || result.rows.length === 0) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      const isAdminFromDB = result.rows[0].is_admin;
+
+      if (!isAdminFromDB) {
+        return res.status(403).json({ message: "Admin privileges required" });
+      }
+
+      // Return admin check result
+      res.status(200).json({ 
+        isAdmin: true,
+        userId: payload.userId,
+        isDemo: false
+      });
+    } finally {
+      client.release();
+      await pool.end();
+    }
   } catch (error) {
     console.error('Admin check error:', error);
     res.status(401).json({ message: "Authentication failed" });

@@ -1340,7 +1340,7 @@ async function sendEmail(to: string, template: keyof typeof emailTemplates, data
       body = body.replace(new RegExp(placeholder, 'g'), data[key]);
     });
 
-    body = body.replace(/{SITE_URL}/g, process.env.SITE_URL || 'https://laser-touch.vercel.app');
+    body = body.replace(/{SITE_URL}/g, process.env.SITE_URL || 'https://psycho-therapy.vercel.app');
     
     const mailOptions = {
       from: `"${process.env.EMAIL_FROM_NAME || 'LaserTouch'}" <${process.env.SMTP_USER || 'noreply@lasertouch.com'}>`,

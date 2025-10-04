@@ -1,4 +1,4 @@
-// Service Worker для LaserTouch - ВРЕМЕННО ОТКЛЮЧЕН
+// Service Worker для Psycho Therapy - ВРЕМЕННО ОТКЛЮЧЕН
 console.log('Service Worker отключен для тестирования');
 
 // Отключаем все обработчики событий
@@ -228,7 +228,7 @@ async function handleOfflineFallback(request) {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>LaserTouch - Оффлайн</title>
+          <title>Psycho Therapy - Оффлайн</title>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>

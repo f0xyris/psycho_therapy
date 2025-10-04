@@ -52,6 +52,8 @@ export interface Translations {
   spaServices: string;
   groupTherapy: string;
   childTherapy: string;
+  individualTherapy: string;
+  onlineConsultations: string;
   
   // Service details
   laserHairRemovalDesc: string;
@@ -416,7 +418,7 @@ export const translations: Record<Language, Translations> = {
     },
     heroTitle: "Професійна лазерна епіляція та масаж",
     heroSubtitle: "Відчуйте найвищий рівень краси та здоров'я",
-    heroDescription: "Трансформуйте свою шкіру за допомогою наших сучасних лазерних процедур та омолоджуючої масажної терапії. Записуйтесь на прийом сьогодні.",
+    heroDescription: "Професійна психологічна допомога та підтримка. Індивідуальна, групова та онлайн терапія. Запишіться на консультацію сьогодні.",
     bookNow: "Записатися",
     servicesTitle: "Психотерапевтичні послуги",
     servicesDescription: "Доказові підходи для підтримки вашого ментального здоров’я",
@@ -426,6 +428,8 @@ export const translations: Record<Language, Translations> = {
     spaServices: "Робота з тривогою та стресом",
     groupTherapy: "Групова терапія",
     childTherapy: "Дитяча терапія",
+    individualTherapy: "Індивідуальна терапія",
+    onlineConsultations: "Онлайн консультації",
     laserHairRemovalDesc: "Індивідуальні сесії з фокусом на ваші цілі та розвиток",
     massageDesc: "Покращення комунікації, довіри та емоційного зв’язку у відносинах",
     spaDesc: "Практичні інструменти для зниження тривоги, керування стресом і відновлення балансу",
@@ -476,7 +480,7 @@ export const translations: Record<Language, Translations> = {
     personalAccount: "Кабінет",
     adminTitle: "Панель адміністратора",
     adminPanel: "Адміністрування",
-    welcomeMessage: "Вітаємо в салоні краси LaserTouch",
+    welcomeMessage: "Вітаємо в Психотерапії з Анною Кухарською",
     pageUnderConstruction: "Ця сторінка знаходиться в розробці",
     myAppointments: "Мої записи",
     profileSettings: "Налаштування профілю",
@@ -563,8 +567,8 @@ export const translations: Record<Language, Translations> = {
     returnToCourses: "Повернутися до курсів",
     cost: "Вартість",
     auth: {
-      welcome: "Ласкаво просимо до LaserTouch",
-      subtitle: "Увійдіть або створіть акаунт, щоб записатися на прийом",
+      welcome: "Ласкаво просимо",
+      subtitle: "Увійдіть або створіть акаунт, щоб записатися на консультацію",
       login: "Увійти",
       register: "Реєстрація",
       email: "Email",
@@ -581,7 +585,7 @@ export const translations: Record<Language, Translations> = {
       registering: "Реєструємо...",
       or: "або",
       googleLogin: "Увійти через Google",
-      heroDescription: "Професійні косметичні послуги в центрі Варшави. Лазер, масаж, spa та навчання.",
+      heroDescription: "Професійна психологічна допомога та підтримка",
       emailRequired: "Email обов'язковий",
       passwordRequired: "Пароль обов'язковий",
       firstNameRequired: "Ім'я обов'язкове",

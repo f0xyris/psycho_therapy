@@ -31,7 +31,7 @@ function extractTokenFromRequest(req: any): string | null {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', 'https://laser-touch.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', 'https://psycho-therapy.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');

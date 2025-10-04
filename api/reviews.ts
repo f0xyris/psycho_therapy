@@ -32,8 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
   // Allow known origins to send credentials/headers
   const allowedOrigins = [
-    'https://laser-touch.vercel.app',
-    'https://laser-touch-git-main-yaroslav-kravets-projects.vercel.app',
+    'https://psycho-therapy.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
   ];

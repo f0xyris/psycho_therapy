@@ -23,7 +23,7 @@ function verifyToken(token: string | null): JWTPayload | null {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', 'https://laser-touch.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', 'https://psycho-therapy.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -208,7 +208,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (cols.includes('updated_at')) {
           updateSql += `, updated_at = NOW()`;
         }
-        const url = new URL(req.url || '/', 'https://laser-touch.vercel.app');
+        const url = new URL(req.url || '/', 'https://psycho-therapy.vercel.app');
         const pathname = url.pathname;
         const pathId = pathname.startsWith('/api/services/') ? Number(pathname.split('/').pop()) : undefined;
         const targetId = pathId ?? Number(id);
@@ -233,7 +233,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `);
         const cols = structure.rows.map((r: any) => r.column_name);
 
-        const url = new URL(req.url || '/', 'https://laser-touch.vercel.app');
+        const url = new URL(req.url || '/', 'https://psycho-therapy.vercel.app');
         const pathname = url.pathname;
         const pathId = pathname.startsWith('/api/services/') ? Number(pathname.split('/').pop()) : undefined;
         const targetId = (id as string) ? Number(id) : pathId;

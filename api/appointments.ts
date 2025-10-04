@@ -33,8 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // CORS FIX: Expanded allowed origins to include Vercel preview deployments and local development
   const allowedOrigins = [
-    'https://laser-touch.vercel.app',
-    'https://laser-touch-git-main-yaroslav-kravets-projects.vercel.app',
+    'https://psycho-therapy.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
   ];

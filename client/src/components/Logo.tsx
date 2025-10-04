@@ -70,7 +70,7 @@ export const Logo: React.FC<LogoProps> = ({
       {/* Text */}
       {showText && (
         <span className={`${textSizes[size]} font-playfair font-bold text-mystical-700 dark:text-mystical-400 ml-2`}>
-          LaserTouch
+          Psycho Therapy
         </span>
       )}
     </div>

@@ -92,7 +92,7 @@ export default function Login() {
       await registerMutation.mutateAsync(data);
       toast({
         title: t.auth?.register || "Registration successful",
-        description: "Welcome to LaserTouch!",
+        description: "Ласкаво просимо до Psycho Therapy!",
       });
       // Небольшая задержка перед перенаправлением, чтобы пользователь увидел тост
       setTimeout(() => {
@@ -327,27 +327,27 @@ export default function Login() {
         <div className="flex flex-col justify-center items-center text-center space-y-6">
           <div className="max-w-md">
             <h1 className="text-4xl font-playfair font-bold text-sage-800 dark:text-sage-100 mb-4">
-              LaserTouch
+              Psycho Therapy
             </h1>
             <p className="text-lg text-sage-600 dark:text-sage-300 mb-6">
-              {t.auth?.heroDescription || "Professional beauty treatments and training courses"}
+              {t.auth?.heroDescription || "Професійна психологічна допомога та підтримка"}
             </p>
             <div className="grid grid-cols-2 gap-4 text-sm text-sage-600 dark:text-sage-300">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-sage-600 rounded-full"></div>
-                <span>{t.laserHairRemoval || "Laser Hair Removal"}</span>
+                <span>{t.individualTherapy || "Індивідуальна терапія"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-sage-600 rounded-full"></div>
-                <span>{t.massage || "Massage Therapy"}</span>
+                <span>{t.groupTherapy || "Групова терапія"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-sage-600 rounded-full"></div>
-                <span>{t.spaServices || "Spa Treatments"}</span>
+                <span>{t.childTherapy || "Дитяча терапія"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-sage-600 rounded-full"></div>
-                <span>{t.courses || "Training Courses"}</span>
+                <span>{t.onlineConsultations || "Онлайн консультації"}</span>
               </div>
             </div>
           </div>

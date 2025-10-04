@@ -164,7 +164,7 @@ export const ModernPreloader: React.FC<{ isVisible: boolean; onComplete?: () => 
           <div className="relative">
             <div className="text-6xl font-playfair font-bold text-white mb-2 relative">
               <span className="bg-gradient-to-r from-mystical-400 via-accent-400 to-mystical-400 bg-clip-text text-mystical-400">
-                LaserTouch
+                Psycho Therapy
               </span>
               {/* Laser scan effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 laser-scan-animation" />
@@ -257,7 +257,7 @@ export const SimpleLogoPreloader: React.FC<{ className?: string }> = ({ classNam
         {/* Logo */}
         <div className="space-y-4">
           <div className="text-4xl font-playfair font-bold text-sage-800 dark:text-sage-200">
-            LaserTouch
+            Psycho Therapy
           </div>
           <div className="text-sage-600 dark:text-sage-400 text-lg font-inter">
             Beauty Studio
@@ -500,7 +500,7 @@ export function PageLoader() {
         {/* Logo area */}
         <div className="space-y-4">
           <div className="text-4xl font-playfair font-bold text-sage-800">
-            LaserTouch
+            Psycho Therapy
           </div>
           <div className="text-sage-600 text-lg font-inter">
             {t.common?.beautyStudio || "Beauty Studio"}

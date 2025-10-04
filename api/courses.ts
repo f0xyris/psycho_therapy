@@ -23,7 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try { return jwt.verify(token, secret); } catch { return null; }
   };
   const origin = req.headers.origin as string | undefined;
-  const url = new URL(req.url || '/', 'https://laser-touch.vercel.app');
+  const url = new URL(req.url || '/', 'https://psycho-therapy.vercel.app');
   const pathname = url.pathname;
 
   // Stripe webhook must read raw body and doesn't need CORS
@@ -85,8 +85,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Normal CORS for browser endpoints
   const allowedOrigins = [
-    'https://laser-touch.vercel.app',
-    'https://laser-touch-git-main-yaroslav-kravets-projects.vercel.app',
     'https://psycho-therapy.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'

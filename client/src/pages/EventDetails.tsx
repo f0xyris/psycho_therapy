@@ -113,10 +113,8 @@ export default function EventDetails() {
     })();
   }, [course?.docUrl]);
 
-  // Show preloader while loading data OR while parsing document (only if docUrl exists)
-  const showPreloader = isLoading || (course?.docUrl && docLoading);
-
-  if (showPreloader) {
+  // Show preloader only while loading course data
+  if (isLoading) {
     return (
       <PageLoader />
     );
@@ -155,7 +153,15 @@ export default function EventDetails() {
           )}
 
           {course.docUrl ? (
-            <div ref={docRef} />
+            <>
+              {docLoading && (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sage-600"></div>
+                  <span className="ml-3 text-sage-600">Завантаження тексту...</span>
+                </div>
+              )}
+              <div ref={docRef} className={docLoading ? 'hidden' : ''} />
+            </>
           ) : (
             <p className="text-muted-foreground">Деталі події будуть додані пізніше.</p>
           )}

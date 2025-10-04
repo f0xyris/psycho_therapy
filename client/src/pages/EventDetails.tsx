@@ -21,7 +21,7 @@ export default function EventDetails() {
 
   const id = Number(params?.id);
 
-  const { data: course } = useQuery<Course | null>({
+  const { data: course, isLoading } = useQuery<Course | null>({
     queryKey: ["/api/courses", id],
     queryFn: async () => {
       if (!id) return null;
@@ -59,6 +59,14 @@ export default function EventDetails() {
       }
     })();
   }, [course?.docUrl]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-[60vh] flex items-center justify-center px-4 py-12">
+        <div className="text-muted-foreground">Завантаження…</div>
+      </main>
+    );
+  }
 
   if (!course) {
     return (

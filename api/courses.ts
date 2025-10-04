@@ -238,7 +238,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (pathname === '/api/courses' && req.method === 'POST') {
     const payload = verifyToken(extractToken(req));
     const isDemo = !!payload?.isDemo;
-    const { name, price, duration, description, category, imageUrl } = req.body as any;
+    const { name, price, duration, description, category, imageUrl, docUrl } = req.body as any;
     if (isDemo) {
       return res.status(201).json({
         id: Math.floor(Math.random() * 1000000) + 1000,
@@ -277,6 +277,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (cols.includes('duration')) add('duration', duration || 60);
       if (cols.includes('category')) add('category', category || 'custom');
       if (cols.includes('image_url')) add('image_url', imageUrl || null);
+      if (cols.includes('doc_url')) add('doc_url', docUrl || null);
       if (cols.includes('image')) add('image', imageUrl || null);
       if (cols.includes('created_at')) add('created_at', 'NOW()', true);
       if (cols.includes('updated_at')) add('updated_at', 'NOW()', true);
@@ -292,6 +293,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         price: course.price || 0,
         duration: course.duration || 60,
         imageUrl: course.image_url || course.image || null,
+        docUrl: course.doc_url || null,
         category: course.category || 'custom',
         isActive: course.is_active !== false,
         createdAt: course.created_at,
@@ -309,7 +311,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const isDemo = !!payload?.isDemo;
     if (isDemo) return res.status(200).json({ success: true, demo: true });
     const id = Number(pathname.split('/').pop());
-    const { name, description, price, duration, category, imageUrl } = req.body as any;
+    const { name, description, price, duration, category, imageUrl, docUrl } = req.body as any;
     if (!process.env.DATABASE_URL) return res.status(500).json({ error: 'Database configuration missing' });
     const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
     const client = await pool.connect();
@@ -325,6 +327,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (cols.includes('duration') && duration !== undefined) add('duration', duration);
       if (cols.includes('category') && category !== undefined) add('category', category);
       if (cols.includes('image_url') && imageUrl !== undefined) add('image_url', imageUrl);
+      if (cols.includes('doc_url') && docUrl !== undefined) add('doc_url', docUrl);
       if (cols.includes('image') && imageUrl !== undefined) add('image', imageUrl);
       if (cols.includes('updated_at')) sets.push('updated_at = NOW()');
       if (sets.length === 0) return res.status(400).json({ error: 'No fields to update' });

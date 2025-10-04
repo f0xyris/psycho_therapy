@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { AppPreloader } from "@/components/LoadingSpinner";
+import { PageLoader } from "@/components/LoadingSpinner";
 import { useEffect, useRef, useState } from "react";
 import { renderAsync as renderDocx } from "docx-preview";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
@@ -33,13 +33,20 @@ export default function EventDetails() {
     },
   });
 
+  // Engage doc preloader immediately when course with docUrl arrives to avoid flicker
+  useEffect(() => {
+    if (course?.docUrl) {
+      setDocLoading(true);
+    }
+  }, [course?.docUrl]);
+
   useEffect(() => {
     (async () => {
       if (!course?.docUrl || !docRef.current) {
         setDocLoading(false);
         return;
       }
-      setDocLoading(true);
+      // docLoading is set in the docUrl watcher to prevent one-frame flicker
       if (/\.docx?$/i.test(course.docUrl)) {
         try {
           const res = await fetch(course.docUrl);
@@ -75,9 +82,7 @@ export default function EventDetails() {
 
   if (showPreloader) {
     return (
-      <>
-        <AppPreloader isVisible={true} />
-      </>
+      <PageLoader />
     );
   }
 

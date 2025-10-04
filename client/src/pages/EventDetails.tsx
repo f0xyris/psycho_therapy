@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { AppPreloader } from "@/components/LoadingSpinner";
 import { useEffect, useRef } from "react";
 import { renderAsync as renderDocx } from "docx-preview";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
@@ -62,9 +63,9 @@ export default function EventDetails() {
 
   if (isLoading) {
     return (
-      <main className="min-h-[60vh] flex items-center justify-center px-4 py-12">
-        <div className="text-muted-foreground">Завантаження…</div>
-      </main>
+      <>
+        <AppPreloader isVisible={true} />
+      </>
     );
   }
 

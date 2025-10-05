@@ -113,6 +113,41 @@ export default function EventDetails() {
     })();
   }, [course?.docUrl]);
 
+  // Remove docx-preview injected styles that break float layout
+  useEffect(() => {
+    if (!docLoading && docRef.current) {
+      console.log('🧹 Cleaning up docx-preview styles...');
+      
+      // Remove <style> tags
+      const styles = docRef.current.querySelectorAll('style');
+      console.log(`Found ${styles.length} style tags to remove`);
+      styles.forEach(style => style.remove());
+      
+      // Remove inline styles from docx sections
+      const sections = docRef.current.querySelectorAll('section.docx');
+      console.log(`Found ${sections.length} docx sections to clean`);
+      sections.forEach(section => {
+        section.removeAttribute('style');
+        console.log('Removed inline styles from section.docx');
+      });
+      
+      // Also remove any fixed width/padding from other elements if needed
+      const allElements = docRef.current.querySelectorAll('[style*="width"][style*="pt"], [style*="padding"][style*="pt"]');
+      console.log(`Found ${allElements.length} elements with pt-based styles`);
+      allElements.forEach(el => {
+        const style = el.getAttribute('style');
+        if (style) {
+          // Remove width and padding properties with pt units
+          const newStyle = style
+            .replace(/width:\s*[\d.]+pt;?/gi, '')
+            .replace(/padding:\s*[\d.]+pt;?/gi, '')
+            .replace(/min-height:\s*[\d.]+pt;?/gi, '');
+          el.setAttribute('style', newStyle.trim());
+        }
+      });
+    }
+  }, [docLoading]);
+
   // Show preloader only while loading course data
   if (isLoading) {
     return (
@@ -134,7 +169,11 @@ export default function EventDetails() {
   return (
     <main className="px-3 sm:px-4 lg:px-6 py-6 sm:py-10">
       <div className="mx-auto max-w-4xl">
-        <Button variant="ghost" onClick={() => setLocation("/training")} className="mb-4 gap-2">
+        <Button
+          variant="ghost"
+          onClick={() => setLocation("/training")}
+          className="mb-4 gap-2"
+        >
           <ArrowLeft className="h-4 w-4" /> Назад до подій
         </Button>
 
@@ -144,11 +183,35 @@ export default function EventDetails() {
             {desc && <p className="text-muted-foreground !mt-0">{desc}</p>}
           </header>
 
+          <style>{`
+            .docx-content p {
+              margin-bottom: 1rem;
+            }
+            .docx-content img {
+              max-width: 100%;
+              height: auto;
+            }
+            .docx-content ul, .docx-content ol {
+              margin-bottom: 1rem;
+              padding-left: 1.5rem;
+            }
+            .docx-content li {
+              margin-bottom: 0.5rem;
+            }
+            .docx-content section.docx {
+              width: 100% !important;
+              max-width: 100% !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              min-height: auto !important;
+            }
+          `}</style>
+
           {course.imageUrl && (
             <img
               src={course.imageUrl}
               alt={title}
-              className="float-right w-full sm:w-1/2 ml-6 mb-4 rounded-lg shadow"
+              className="float-right sm:w-1/2 w-full sm:ml-6 ml-0 mb-4 rounded-lg shadow object-cover"
             />
           )}
 
@@ -160,7 +223,7 @@ export default function EventDetails() {
                   <span className="ml-3 text-sage-600">Завантаження тексту...</span>
                 </div>
               )}
-              <div ref={docRef} className={docLoading ? 'hidden' : ''} />
+              <div ref={docRef} className={`docx-content ${docLoading ? 'hidden' : ''}`} />
             </>
           ) : (
             <p className="text-muted-foreground">Деталі події будуть додані пізніше.</p>
